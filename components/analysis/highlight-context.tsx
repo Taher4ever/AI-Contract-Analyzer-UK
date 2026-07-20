@@ -9,6 +9,9 @@ interface HighlightContextValue {
   highlight: (paragraphIds: number[]) => void;
   activeTab: AnalysisTab;
   setActiveTab: (tab: AnalysisTab) => void;
+  chatDraft: string;
+  setChatDraft: (text: string) => void;
+  askAboutFinding: (question: string) => void;
 }
 
 const HighlightContext = createContext<HighlightContextValue | null>(null);
@@ -16,6 +19,7 @@ const HighlightContext = createContext<HighlightContextValue | null>(null);
 export function HighlightProvider({ children }: { children: React.ReactNode }) {
   const [highlightedIds, setHighlightedIds] = useState<Set<number>>(new Set());
   const [activeTab, setActiveTab] = useState<AnalysisTab>("analysis");
+  const [chatDraft, setChatDraft] = useState("");
 
   const highlight = useCallback((paragraphIds: number[]) => {
     if (paragraphIds.length === 0) return;
@@ -23,9 +27,22 @@ export function HighlightProvider({ children }: { children: React.ReactNode }) {
     setActiveTab("contract");
   }, []);
 
+  const askAboutFinding = useCallback((question: string) => {
+    setChatDraft(question);
+    setActiveTab("chat");
+  }, []);
+
   const value = useMemo(
-    () => ({ highlightedIds, highlight, activeTab, setActiveTab }),
-    [highlightedIds, highlight, activeTab]
+    () => ({
+      highlightedIds,
+      highlight,
+      activeTab,
+      setActiveTab,
+      chatDraft,
+      setChatDraft,
+      askAboutFinding,
+    }),
+    [highlightedIds, highlight, activeTab, chatDraft, askAboutFinding]
   );
 
   return <HighlightContext.Provider value={value}>{children}</HighlightContext.Provider>;

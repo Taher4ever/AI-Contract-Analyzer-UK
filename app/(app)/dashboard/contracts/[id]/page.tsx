@@ -40,6 +40,12 @@ export default async function ContractPage({
     .eq("contract_id", id)
     .maybeSingle();
 
+  const { data: chatMessages } = await supabase
+    .from("chat_messages")
+    .select("id, role, content")
+    .eq("contract_id", id)
+    .order("created_at", { ascending: true });
+
   if (!analysis) {
     return (
       <div className="mx-auto max-w-3xl p-6 lg:p-8">
@@ -97,6 +103,7 @@ export default async function ContractPage({
       sections={sectionsResult.data}
       timeline={timelineResult.data}
       recommendedQuestions={questionsResult.data}
+      initialChatMessages={chatMessages ?? []}
     />
   );
 }

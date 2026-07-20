@@ -50,7 +50,7 @@ phase file, and push to origin main.
 | 7 | Upload & text extraction | `phases/phase-07-upload.md` | [x] |
 | 8 | AI analysis engine | `phases/phase-08-ai-analysis.md` | [x] |
 | 9 | Analysis page (UI, highlights, timeline) | `phases/phase-09-analysis-page.md` | [x] |
-| 10 | AI chat | `phases/phase-10-ai-chat.md` | [ ] |
+| 10 | AI chat | `phases/phase-10-ai-chat.md` | [x] |
 | 11 | Dashboard organization (search, folders, favorites) | `phases/phase-11-dashboard-features.md` | [ ] |
 | 12 | Export & shareable links | `phases/phase-12-export.md` | [ ] |
 | 13 | Stripe billing & teams | `phases/phase-13-billing.md` | [ ] |

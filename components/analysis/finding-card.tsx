@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ArrowRight, Info, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowRight, Info, MessageCircle, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHighlight } from "./highlight-context";
 import type { Finding } from "@/lib/ai/schemas";
@@ -21,7 +21,7 @@ const SEVERITY_CONFIG = {
 } as const;
 
 export function FindingCard({ finding }: { finding: Finding }) {
-  const { highlight } = useHighlight();
+  const { highlight, askAboutFinding } = useHighlight();
   const { icon: Icon, iconClassName } = SEVERITY_CONFIG[finding.severity];
 
   return (
@@ -40,16 +40,28 @@ export function FindingCard({ finding }: { finding: Finding }) {
           <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
             {finding.explanation}
           </p>
-          {finding.paragraphIds.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-4">
+            {finding.paragraphIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => highlight(finding.paragraphIds)}
+                className="text-primary inline-flex items-center gap-1 text-xs font-medium hover:underline"
+              >
+                View in contract
+                <ArrowRight className="size-3" />
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => highlight(finding.paragraphIds)}
-              className="text-primary mt-2 inline-flex items-center gap-1 text-xs font-medium hover:underline"
+              onClick={() =>
+                askAboutFinding(`Can you tell me more about this: "${finding.title}"?`)
+              }
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium hover:underline"
             >
-              View in contract
-              <ArrowRight className="size-3" />
+              <MessageCircle className="size-3" />
+              Ask AI about this
             </button>
-          )}
+          </div>
         </div>
       </div>
     </div>
