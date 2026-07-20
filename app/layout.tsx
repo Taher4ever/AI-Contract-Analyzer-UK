@@ -29,13 +29,40 @@ const newsreader = localFont({
   variable: "--font-newsreader",
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+const title = "ContractLens AI — Understand any UK contract in minutes";
+const description =
+  "Upload a contract and get a plain-English summary, risk score, clause analysis and an AI you can ask anything about your document.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(appUrl),
   title: {
-    default: "ContractLens AI — Understand any UK contract in minutes",
+    default: title,
     template: "%s · ContractLens AI",
   },
-  description:
-    "Upload a contract and get a plain-English summary, risk score, clause analysis and an AI you can ask anything about your document.",
+  description,
+  keywords: [
+    "contract analysis",
+    "UK contract checker",
+    "tenancy agreement analysis",
+    "employment contract review",
+    "AI legal document summary",
+    "NDA analysis",
+    "contract risk score",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_GB",
+    url: appUrl,
+    siteName: "ContractLens AI",
+    title,
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({

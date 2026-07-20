@@ -9,51 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/shared/container";
 import { FadeIn, FadeInStagger } from "@/components/shared/motion";
 import { cn } from "@/lib/utils";
+import { tiers } from "@/components/marketing/data";
 
 type Billing = "monthly" | "yearly";
-
-const tiers = [
-  {
-    name: "Free",
-    description: "Try it on your next contract.",
-    monthly: 0,
-    features: [
-      "3 documents per month",
-      "Risk score & summary",
-      "Clause-by-clause analysis",
-      "AI chat about your document",
-    ],
-    cta: "Start for free",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    description: "For people who sign things often.",
-    monthly: 19,
-    features: [
-      "Unlimited documents",
-      "Everything in Free",
-      "PDF export & share links",
-      "Key dates timeline",
-      "Priority processing",
-    ],
-    cta: "Go Pro",
-    highlighted: true,
-  },
-  {
-    name: "Team",
-    description: "For agencies, landlords and small firms.",
-    monthly: 49,
-    features: [
-      "Everything in Pro",
-      "Team members & roles",
-      "Shared workspace",
-      "Centralised billing",
-    ],
-    cta: "Start with Team",
-    highlighted: false,
-  },
-];
 
 function price(monthly: number, billing: Billing) {
   return billing === "yearly" ? Math.round(monthly * 0.8) : monthly;
