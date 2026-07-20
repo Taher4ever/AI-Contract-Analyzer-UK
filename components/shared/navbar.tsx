@@ -15,6 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { Container } from "@/components/shared/container";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { UserMenu } from "@/components/shared/user-menu";
+import { SignOutButton } from "@/components/shared/sign-out-button";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -24,7 +26,9 @@ const links = [
   { href: "/blog", label: "Blog" },
 ];
 
-export function Navbar() {
+export type NavbarUser = { email: string; avatarUrl?: string | null } | null;
+
+export function Navbar({ user = null }: { user?: NavbarUser }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -59,21 +63,29 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button
-            variant="ghost"
-            className="hidden rounded-full md:inline-flex"
-            nativeButton={false}
-            render={<Link href="/login" />}
-          >
-            Sign in
-          </Button>
-          <Button
-            className="shadow-soft hidden rounded-full md:inline-flex"
-            nativeButton={false}
-            render={<Link href="/signup" />}
-          >
-            Analyze Contract
-          </Button>
+          {user ? (
+            <div className="hidden md:block">
+              <UserMenu email={user.email} avatarUrl={user.avatarUrl} />
+            </div>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                className="hidden rounded-full md:inline-flex"
+                nativeButton={false}
+                render={<Link href="/login" />}
+              >
+                Sign in
+              </Button>
+              <Button
+                className="shadow-soft hidden rounded-full md:inline-flex"
+                nativeButton={false}
+                render={<Link href="/signup" />}
+              >
+                Analyze Contract
+              </Button>
+            </>
+          )}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger
@@ -106,23 +118,45 @@ export function Navbar() {
                   </Link>
                 ))}
                 <Separator className="my-3" />
-                <Button
-                  variant="outline"
-                  className="rounded-full"
-                  onClick={() => setMobileOpen(false)}
-                  nativeButton={false}
-                  render={<Link href="/login" />}
-                >
-                  Sign in
-                </Button>
-                <Button
-                  className="mt-2 rounded-full"
-                  onClick={() => setMobileOpen(false)}
-                  nativeButton={false}
-                  render={<Link href="/signup" />}
-                >
-                  Analyze Contract
-                </Button>
+                {user ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={() => setMobileOpen(false)}
+                      nativeButton={false}
+                      render={<Link href="/dashboard" />}
+                    >
+                      Dashboard
+                    </Button>
+                    <SignOutButton
+                      onClick={() => setMobileOpen(false)}
+                      className="text-muted-foreground hover:text-foreground mt-2 rounded-xl px-3 py-2.5 text-left text-base font-medium transition-colors"
+                    >
+                      Sign out
+                    </SignOutButton>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={() => setMobileOpen(false)}
+                      nativeButton={false}
+                      render={<Link href="/login" />}
+                    >
+                      Sign in
+                    </Button>
+                    <Button
+                      className="mt-2 rounded-full"
+                      onClick={() => setMobileOpen(false)}
+                      nativeButton={false}
+                      render={<Link href="/signup" />}
+                    >
+                      Analyze Contract
+                    </Button>
+                  </>
+                )}
               </nav>
             </SheetContent>
           </Sheet>

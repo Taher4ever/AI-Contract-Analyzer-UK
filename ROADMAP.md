@@ -45,7 +45,7 @@ phase file, and push to origin main.
 | 2 | Landing page | `phases/phase-02-landing-page.md` | [x] |
 | 3 | SEO, metadata & error pages | `phases/phase-03-seo-errors.md` | [x] |
 | 4 | Supabase & database schema | `phases/phase-04-database.md` | [x] |
-| 5 | Authentication | `phases/phase-05-authentication.md` | [ ] |
+| 5 | Authentication | `phases/phase-05-authentication.md` | [x] |
 | 6 | Dashboard shell | `phases/phase-06-dashboard-shell.md` | [ ] |
 | 7 | Upload & text extraction | `phases/phase-07-upload.md` | [ ] |
 | 8 | AI analysis engine | `phases/phase-08-ai-analysis.md` | [ ] |
