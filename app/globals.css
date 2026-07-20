@@ -162,6 +162,16 @@
     );
 }
 
+@theme {
+  --animate-marquee: marquee 36s linear infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -171,5 +181,10 @@
   }
   html {
     @apply font-sans;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 }
