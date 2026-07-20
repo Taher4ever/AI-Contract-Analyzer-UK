@@ -41,7 +41,7 @@ phase file, and push to origin main.
 | # | Phase | File | Done |
 |---|-------|------|------|
 | 0 | Project init & GitHub | `phases/phase-00-setup.md` | [x] |
-| 1 | Design system & layout shell | `phases/phase-01-design-system.md` | [ ] |
+| 1 | Design system & layout shell | `phases/phase-01-design-system.md` | [x] |
 | 2 | Landing page | `phases/phase-02-landing-page.md` | [ ] |
 | 3 | SEO, metadata & error pages | `phases/phase-03-seo-errors.md` | [ ] |
 | 4 | Supabase & database schema | `phases/phase-04-database.md` | [ ] |
