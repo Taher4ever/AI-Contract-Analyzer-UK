@@ -6,7 +6,7 @@ SaaS that explains UK legal documents in plain English. Users upload a contract 
 
 ## Tech stack
 
-Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS · shadcn/ui · Framer Motion · Supabase (auth, Postgres, storage) · Stripe · OpenAI via Vercel AI SDK (`ai` + `@ai-sdk/openai`) · next-themes (dark/light).
+Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS · shadcn/ui · Framer Motion · Supabase (auth, Postgres, storage) · Stripe · Anthropic Claude via the official `@anthropic-ai/sdk` (model `claude-opus-4-8`, not the Vercel AI SDK / OpenAI) · next-themes (dark/light).
 
 ## Folder structure
 
@@ -56,8 +56,8 @@ npm run lint
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=claude-opus-4-8
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=

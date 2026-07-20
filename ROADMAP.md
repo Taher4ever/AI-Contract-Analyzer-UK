@@ -48,7 +48,7 @@ phase file, and push to origin main.
 | 5 | Authentication | `phases/phase-05-authentication.md` | [x] |
 | 6 | Dashboard shell | `phases/phase-06-dashboard-shell.md` | [x] |
 | 7 | Upload & text extraction | `phases/phase-07-upload.md` | [x] |
-| 8 | AI analysis engine | `phases/phase-08-ai-analysis.md` | [ ] |
+| 8 | AI analysis engine | `phases/phase-08-ai-analysis.md` | [x] |
 | 9 | Analysis page (UI, highlights, timeline) | `phases/phase-09-analysis-page.md` | [ ] |
 | 10 | AI chat | `phases/phase-10-ai-chat.md` | [ ] |
 | 11 | Dashboard organization (search, folders, favorites) | `phases/phase-11-dashboard-features.md` | [ ] |

@@ -132,7 +132,7 @@ export interface Database {
           contract_id: string;
           risk_score: number | null;
           summary: string | null;
-          sections: unknown[];
+          sections: unknown;
           timeline: unknown[];
           recommended_questions: unknown[];
           model: string | null;
@@ -143,7 +143,7 @@ export interface Database {
           contract_id: string;
           risk_score?: number | null;
           summary?: string | null;
-          sections?: unknown[];
+          sections?: unknown;
           timeline?: unknown[];
           recommended_questions?: unknown[];
           model?: string | null;
