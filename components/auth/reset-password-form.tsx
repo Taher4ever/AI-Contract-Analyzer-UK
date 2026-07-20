@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,20 +25,25 @@ type FormValues = z.infer<typeof schema>;
 
 export function ResetPasswordForm() {
   const [rootError, setRootError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
-  const onSubmit = handleSubmit(async (values) => {
+  // The action's redirect() must run inside a transition, not inside
+  // react-hook-form's own submit promise, or the redirect gets swallowed.
+  const onSubmit = handleSubmit((values) => {
     setRootError(null);
-    const result = await updatePassword({ password: values.password });
-    if (result?.error) {
-      setRootError(result.error);
-      toast.error(result.error);
-    }
+    startTransition(async () => {
+      const result = await updatePassword({ password: values.password });
+      if (result?.error) {
+        setRootError(result.error);
+        toast.error(result.error);
+      }
+    });
   });
 
   return (
@@ -81,8 +86,8 @@ export function ResetPasswordForm() {
 
         {rootError && <p className="text-destructive text-sm">{rootError}</p>}
 
-        <Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+        <Button type="submit" className="w-full rounded-full" disabled={isPending}>
+          {isPending && <Loader2 className="size-4 animate-spin" />}
           Update password
         </Button>
       </form>

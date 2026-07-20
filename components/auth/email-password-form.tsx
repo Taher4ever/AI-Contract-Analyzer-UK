@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,33 +34,38 @@ export function EmailPasswordForm({
 }) {
   const [rootError, setRootError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(mode === "login" ? loginSchema : signupSchema),
   });
 
   if (successMessage) return <CheckInbox message={successMessage} />;
 
-  const onSubmit = handleSubmit(async (values) => {
+  // The action's redirect() must run inside a transition, not inside
+  // react-hook-form's own submit promise, or the redirect gets swallowed.
+  const onSubmit = handleSubmit((values) => {
     setRootError(null);
-    const result =
-      mode === "login"
-        ? await signInWithPassword({ ...values, next })
-        : await signUp(values);
+    startTransition(async () => {
+      const result =
+        mode === "login"
+          ? await signInWithPassword({ ...values, next })
+          : await signUp(values);
 
-    if (result?.error) {
-      setRootError(result.error);
-      toast.error(result.error);
-      return;
-    }
-    if (result?.success) {
-      setSuccessMessage(result.message ?? "Check your inbox.");
-      toast.success(result.message ?? "Check your inbox.");
-    }
+      if (result?.error) {
+        setRootError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      if (result?.success) {
+        setSuccessMessage(result.message ?? "Check your inbox.");
+        toast.success(result.message ?? "Check your inbox.");
+      }
+    });
   });
 
   return (
@@ -105,8 +110,8 @@ export function EmailPasswordForm({
 
       {rootError && <p className="text-destructive text-sm">{rootError}</p>}
 
-      <Button type="submit" className="w-full rounded-full" disabled={isSubmitting}>
-        {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+      <Button type="submit" className="w-full rounded-full" disabled={isPending}>
+        {isPending && <Loader2 className="size-4 animate-spin" />}
         {mode === "login" ? "Log in" : "Create account"}
       </Button>
     </form>

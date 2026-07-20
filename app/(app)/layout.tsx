@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export default async function AppLayout({
   children,
@@ -13,5 +14,20 @@ export default async function AppLayout({
 
   if (!user) redirect("/login");
 
-  return <>{children}</>;
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, avatar_url, plan")
+    .eq("id", user.id)
+    .single();
+
+  return (
+    <DashboardShell
+      email={user.email ?? ""}
+      fullName={profile?.full_name ?? null}
+      avatarUrl={profile?.avatar_url ?? null}
+      plan={profile?.plan ?? "free"}
+    >
+      {children}
+    </DashboardShell>
+  );
 }

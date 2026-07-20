@@ -38,6 +38,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
+        Relationships: [];
       };
       teams: {
         Row: {
@@ -53,6 +54,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["teams"]["Insert"]>;
+        Relationships: [];
       };
       team_members: {
         Row: {
@@ -74,6 +76,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["team_members"]["Insert"]>;
+        Relationships: [];
       };
       folders: {
         Row: {
@@ -89,6 +92,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["folders"]["Insert"]>;
+        Relationships: [];
       };
       contracts: {
         Row: {
@@ -120,6 +124,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["contracts"]["Insert"]>;
+        Relationships: [];
       };
       analyses: {
         Row: {
@@ -145,6 +150,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["analyses"]["Insert"]>;
+        Relationships: [];
       };
       chat_messages: {
         Row: {
@@ -166,6 +172,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["chat_messages"]["Insert"]>;
+        Relationships: [];
       };
       shared_links: {
         Row: {
@@ -183,6 +190,7 @@ export interface Database {
           expires_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["shared_links"]["Insert"]>;
+        Relationships: [];
       };
       subscriptions: {
         Row: {
@@ -206,6 +214,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["subscriptions"]["Insert"]>;
+        Relationships: [];
       };
       payments: {
         Row: {
@@ -227,6 +236,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["payments"]["Insert"]>;
+        Relationships: [];
       };
       blog_posts: {
         Row: {
@@ -254,7 +264,12 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["blog_posts"]["Insert"]>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
