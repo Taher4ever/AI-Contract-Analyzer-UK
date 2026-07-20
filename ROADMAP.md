@@ -47,7 +47,7 @@ phase file, and push to origin main.
 | 4 | Supabase & database schema | `phases/phase-04-database.md` | [x] |
 | 5 | Authentication | `phases/phase-05-authentication.md` | [x] |
 | 6 | Dashboard shell | `phases/phase-06-dashboard-shell.md` | [x] |
-| 7 | Upload & text extraction | `phases/phase-07-upload.md` | [ ] |
+| 7 | Upload & text extraction | `phases/phase-07-upload.md` | [x] |
 | 8 | AI analysis engine | `phases/phase-08-ai-analysis.md` | [ ] |
 | 9 | Analysis page (UI, highlights, timeline) | `phases/phase-09-analysis-page.md` | [ ] |
 | 10 | AI chat | `phases/phase-10-ai-chat.md` | [ ] |
