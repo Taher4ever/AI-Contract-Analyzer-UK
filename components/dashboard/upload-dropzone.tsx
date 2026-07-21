@@ -2,19 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { toast } from "sonner";
 import { CheckCircle2, Loader2, UploadCloud } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog";
 import { uploadContract } from "@/app/(app)/dashboard/upload/actions";
 import { cn } from "@/lib/utils";
 
@@ -166,27 +156,12 @@ export function UploadDropzone() {
         )}
       </div>
 
-      <Dialog open={limitDialogOpen} onOpenChange={setLimitDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>You&apos;ve reached your free plan limit</DialogTitle>
-            <DialogDescription>
-              Free plans include 3 documents a month. Upgrade to Pro for
-              unlimited analysis.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline" />}>Not now</DialogClose>
-            <Button
-              className="rounded-full"
-              nativeButton={false}
-              render={<Link href="/dashboard/billing" />}
-            >
-              Upgrade
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UpgradeDialog
+        open={limitDialogOpen}
+        onOpenChange={setLimitDialogOpen}
+        title="You've reached your free plan limit"
+        description="Free plans include 3 documents a month. Upgrade to Pro for unlimited analysis."
+      />
     </>
   );
 }

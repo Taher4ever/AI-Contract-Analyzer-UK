@@ -17,8 +17,10 @@ const SECTIONS: { key: keyof StoredSections["findings"]; label: string }[] = [
 
 export function FindingsSections({
   findings,
+  showAskAi = true,
 }: {
   findings: StoredSections["findings"];
+  showAskAi?: boolean;
 }) {
   return (
     <div className="glass shadow-soft rounded-2xl px-4 py-1">
@@ -43,7 +45,7 @@ export function FindingsSections({
                 ) : (
                   <div className="space-y-3">
                     {items.map((finding, i) => (
-                      <FindingCard key={i} finding={finding} />
+                      <FindingCard key={i} finding={finding} showAskAi={showAskAi} />
                     ))}
                   </div>
                 )}

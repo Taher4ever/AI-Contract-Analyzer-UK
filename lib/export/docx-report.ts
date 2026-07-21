@@ -1,0 +1,273 @@
+import {
+  AlignmentType,
+  BorderStyle,
+  Document,
+  Footer,
+  HeadingLevel,
+  Packer,
+  PageNumber,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
+} from "docx";
+import type { Finding, StoredSections, TimelineEntry } from "@/lib/ai/schemas";
+
+const COLORS = {
+  muted: "64748b",
+  primary: "2563eb",
+  low: "059669",
+  medium: "d97706",
+  high: "e11d48",
+  info: "2563eb",
+  warning: "d97706",
+  danger: "e11d48",
+};
+
+const RISK_COLOR: Record<StoredSections["riskLevel"], string> = {
+  low: COLORS.low,
+  medium: COLORS.medium,
+  high: COLORS.high,
+};
+
+const SEVERITY_COLOR: Record<Finding["severity"], string> = {
+  info: COLORS.info,
+  warning: COLORS.warning,
+  danger: COLORS.danger,
+};
+
+const CONTRACT_TYPE_LABELS: Record<StoredSections["contractType"], string> = {
+  tenancy: "Tenancy agreement",
+  employment: "Employment contract",
+  freelance: "Freelance agreement",
+  nda: "NDA",
+  other: "Other agreement",
+};
+
+const FINDING_SECTIONS: { key: keyof StoredSections["findings"]; label: string }[] = [
+  { key: "hiddenRisks", label: "Hidden Risks" },
+  { key: "importantClauses", label: "Important Clauses" },
+  { key: "financialObligations", label: "Financial Obligations" },
+  { key: "terminationClauses", label: "Termination Clauses" },
+  { key: "cancellationRules", label: "Cancellation Rules" },
+];
+
+function heading(text: string) {
+  return new Paragraph({ text, heading: HeadingLevel.HEADING_1, spacing: { before: 300, after: 120 } });
+}
+
+function subheading(text: string) {
+  return new Paragraph({ text, heading: HeadingLevel.HEADING_2, spacing: { before: 200, after: 80 } });
+}
+
+function bodyText(text: string) {
+  return new Paragraph({ children: [new TextRun(text)], spacing: { after: 120 } });
+}
+
+function findingParagraphs(items: Finding[]): Paragraph[] {
+  if (items.length === 0) {
+    return [
+      new Paragraph({
+        children: [new TextRun({ text: "Nothing flagged in this category.", color: COLORS.muted })],
+        spacing: { after: 100 },
+      }),
+    ];
+  }
+  return items.flatMap((item) => [
+    new Paragraph({
+      bullet: { level: 0 },
+      children: [
+        new TextRun({ text: item.title, bold: true, color: SEVERITY_COLOR[item.severity] }),
+      ],
+      spacing: { before: 60 },
+    }),
+    new Paragraph({
+      children: [new TextRun({ text: item.explanation, color: COLORS.muted })],
+      indent: { left: 360 },
+      spacing: { after: 80 },
+    }),
+  ]);
+}
+
+function tableCell(text: string, options: { bold?: boolean; width?: number } = {}) {
+  return new TableCell({
+    width: options.width ? { size: options.width, type: WidthType.PERCENTAGE } : undefined,
+    margins: { top: 60, bottom: 60, left: 100, right: 100 },
+    children: [
+      new Paragraph({ children: [new TextRun({ text, bold: options.bold })] }),
+    ],
+  });
+}
+
+export interface DocxReportProps {
+  title: string;
+  createdAt: string;
+  riskScore: number;
+  summary: string;
+  sections: StoredSections;
+  timeline: TimelineEntry[];
+  recommendedQuestions: string[];
+}
+
+export async function buildContractDocx(props: DocxReportProps): Promise<Buffer> {
+  const { title, createdAt, riskScore, summary, sections, timeline, recommendedQuestions } = props;
+
+  const dateLabel = new Date(createdAt).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  const timelineRows =
+    timeline.length === 0
+      ? []
+      : [
+          new TableRow({
+            children: [
+              tableCell("Date", { bold: true, width: 15 }),
+              tableCell("Event", { bold: true, width: 25 }),
+              tableCell("Type", { bold: true, width: 15 }),
+              tableCell("Details", { bold: true, width: 45 }),
+            ],
+            tableHeader: true,
+          }),
+          ...timeline.map(
+            (entry) =>
+              new TableRow({
+                children: [
+                  tableCell(
+                    entry.date
+                      ? new Date(entry.date).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "Not specified",
+                    { width: 15 }
+                  ),
+                  tableCell(entry.label, { width: 25 }),
+                  tableCell(entry.type, { width: 15 }),
+                  tableCell(entry.explanation, { width: 45 }),
+                ],
+              })
+          ),
+        ];
+
+  const doc = new Document({
+    sections: [
+      {
+        properties: {},
+        footers: {
+          default: new Footer({
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                border: { top: { style: BorderStyle.SINGLE, size: 4, color: "e2e8f0" } },
+                children: [
+                  new TextRun({
+                    text: "Generated by ContractLens AI — not legal advice   |   Page ",
+                    size: 16,
+                    color: COLORS.muted,
+                  }),
+                  new TextRun({ children: [PageNumber.CURRENT], size: 16, color: COLORS.muted }),
+                  new TextRun({ text: " of ", size: 16, color: COLORS.muted }),
+                  new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: COLORS.muted }),
+                ],
+              }),
+            ],
+          }),
+        },
+        children: [
+          new Paragraph({
+            heading: HeadingLevel.TITLE,
+            children: [new TextRun({ text: title })],
+          }),
+          new Paragraph({
+            spacing: { after: 60 },
+            children: [
+              new TextRun({
+                text: `${CONTRACT_TYPE_LABELS[sections.contractType]} · ${dateLabel}`,
+                color: COLORS.muted,
+              }),
+            ],
+          }),
+          new Paragraph({
+            spacing: { after: 200 },
+            children: [
+              new TextRun({
+                text: `Risk score: ${riskScore} / 100 (${sections.riskLevel.toUpperCase()})`,
+                bold: true,
+                color: RISK_COLOR[sections.riskLevel],
+                size: 26,
+              }),
+            ],
+          }),
+
+          heading("Summary"),
+          bodyText(summary),
+
+          heading("Risk breakdown"),
+          bodyText(sections.riskExplanation),
+
+          heading("Findings"),
+          ...FINDING_SECTIONS.flatMap((section) => [
+            subheading(`${section.label} (${sections.findings[section.key].length})`),
+            ...findingParagraphs(sections.findings[section.key]),
+          ]),
+
+          heading("Notice Period & Auto-Renewal"),
+          new Paragraph({
+            spacing: { after: 80 },
+            children: [
+              new TextRun({ text: "Notice period: ", bold: true }),
+              new TextRun(`${sections.noticePeriod.value ?? "Not specified"} — ${sections.noticePeriod.explanation}`),
+            ],
+          }),
+          new Paragraph({
+            spacing: { after: 120 },
+            children: [
+              new TextRun({ text: "Auto-renewal: ", bold: true }),
+              new TextRun(`${sections.autoRenewal.present ? "Yes" : "No"} — ${sections.autoRenewal.explanation}`),
+            ],
+          }),
+
+          heading("Missing Clauses"),
+          ...(sections.missingClauses.length === 0
+            ? [bodyText("None identified.")]
+            : sections.missingClauses.flatMap((clause) => [
+                new Paragraph({
+                  bullet: { level: 0 },
+                  children: [new TextRun({ text: clause.title, bold: true, color: COLORS.warning })],
+                }),
+                new Paragraph({
+                  indent: { left: 360 },
+                  spacing: { after: 80 },
+                  children: [new TextRun({ text: clause.whyItMatters, color: COLORS.muted })],
+                }),
+              ])),
+
+          heading("Timeline"),
+          ...(timelineRows.length === 0
+            ? [bodyText("No dated events identified.")]
+            : [new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: timelineRows })]),
+
+          heading("Recommended Questions"),
+          ...recommendedQuestions.map(
+            (question, i) =>
+              new Paragraph({
+                spacing: { after: 80 },
+                children: [
+                  new TextRun({ text: `${i + 1}. `, bold: true }),
+                  new TextRun(question),
+                ],
+              })
+          ),
+        ],
+      },
+    ],
+  });
+
+  return Packer.toBuffer(doc);
+}

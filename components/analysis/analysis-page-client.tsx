@@ -14,7 +14,7 @@ import { FadeIn, FadeInStagger } from "@/components/shared/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChatPanel, type ChatMessageData } from "@/components/chat/chat-panel";
-import type { Paragraph } from "@/types/database";
+import type { Paragraph, Plan } from "@/types/database";
 import type { ContractType, StoredSections, TimelineEntry } from "@/lib/ai/schemas";
 
 interface AnalysisPageClientProps {
@@ -31,6 +31,8 @@ interface AnalysisPageClientProps {
   initialChatMessages: ChatMessageData[];
   folderId: string | null;
   folders: { id: string; name: string }[];
+  plan: Plan;
+  shareToken: string | null;
 }
 
 function useIsDesktop(): boolean | null {
@@ -69,6 +71,8 @@ function AnalysisPageContent({
   initialChatMessages,
   folderId,
   folders,
+  plan,
+  shareToken,
 }: AnalysisPageClientProps) {
   const { activeTab, setActiveTab } = useHighlight();
   const isDesktop = useIsDesktop();
@@ -136,6 +140,8 @@ function AnalysisPageContent({
         contractType={sections.contractType as ContractType}
         folderId={folderId}
         folders={folders}
+        plan={plan}
+        shareToken={shareToken}
       />
 
       <div className="mt-6 hidden gap-6 lg:grid lg:grid-cols-[55%_45%]">

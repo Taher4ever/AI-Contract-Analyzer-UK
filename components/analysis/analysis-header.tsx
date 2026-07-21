@@ -3,16 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  Check,
-  Download,
-  Folder,
-  Loader2,
-  Pencil,
-  Star,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Check, Folder, Loader2, Pencil, Star, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,8 +23,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReanalyzeButton } from "@/components/dashboard/reanalyze-button";
+import { ExportMenu } from "@/components/analysis/export-menu";
 import {
   moveToFolder,
   renameContract,
@@ -41,6 +32,7 @@ import {
 } from "@/app/(app)/dashboard/contracts/actions";
 import { deleteContract } from "@/app/(app)/dashboard/contracts/[id]/actions";
 import type { ContractType } from "@/lib/ai/schemas";
+import type { Plan } from "@/types/database";
 
 const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
   tenancy: "Tenancy agreement",
@@ -58,6 +50,8 @@ export function AnalysisHeader({
   contractType,
   folderId,
   folders,
+  plan,
+  shareToken,
 }: {
   contractId: string;
   title: string;
@@ -66,6 +60,8 @@ export function AnalysisHeader({
   contractType: ContractType;
   folderId: string | null;
   folders: { id: string; name: string }[];
+  plan: Plan;
+  shareToken: string | null;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -225,17 +221,7 @@ export function AnalysisHeader({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button variant="outline" size="sm" className="rounded-full" disabled />
-            }
-          >
-            <Download className="size-4" />
-            Export
-          </TooltipTrigger>
-          <TooltipContent>Coming soon</TooltipContent>
-        </Tooltip>
+        <ExportMenu contractId={contractId} plan={plan} initialShareToken={shareToken} />
         <ReanalyzeButton contractId={contractId} />
         <Dialog>
           <DialogTrigger

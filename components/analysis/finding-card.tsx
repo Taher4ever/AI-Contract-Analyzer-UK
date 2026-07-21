@@ -20,7 +20,13 @@ const SEVERITY_CONFIG = {
   },
 } as const;
 
-export function FindingCard({ finding }: { finding: Finding }) {
+export function FindingCard({
+  finding,
+  showAskAi = true,
+}: {
+  finding: Finding;
+  showAskAi?: boolean;
+}) {
   const { highlight, askAboutFinding } = useHighlight();
   const { icon: Icon, iconClassName } = SEVERITY_CONFIG[finding.severity];
 
@@ -51,16 +57,18 @@ export function FindingCard({ finding }: { finding: Finding }) {
                 <ArrowRight className="size-3" />
               </button>
             )}
-            <button
-              type="button"
-              onClick={() =>
-                askAboutFinding(`Can you tell me more about this: "${finding.title}"?`)
-              }
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium hover:underline"
-            >
-              <MessageCircle className="size-3" />
-              Ask AI about this
-            </button>
+            {showAskAi && (
+              <button
+                type="button"
+                onClick={() =>
+                  askAboutFinding(`Can you tell me more about this: "${finding.title}"?`)
+                }
+                className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium hover:underline"
+              >
+                <MessageCircle className="size-3" />
+                Ask AI about this
+              </button>
+            )}
           </div>
         </div>
       </div>

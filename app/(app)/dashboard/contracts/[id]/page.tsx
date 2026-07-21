@@ -36,16 +36,23 @@ export default async function ContractPage({
 
   if (!contract) notFound();
 
-  const [{ data: analysis }, { data: chatMessages }, { data: folders }] =
-    await Promise.all([
-      supabase.from("analyses").select("*").eq("contract_id", id).maybeSingle(),
-      supabase
-        .from("chat_messages")
-        .select("id, role, content")
-        .eq("contract_id", id)
-        .order("created_at", { ascending: true }),
-      supabase.from("folders").select("id, name").eq("user_id", user.id).order("name"),
-    ]);
+  const [
+    { data: analysis },
+    { data: chatMessages },
+    { data: folders },
+    { data: profile },
+    { data: sharedLink },
+  ] = await Promise.all([
+    supabase.from("analyses").select("*").eq("contract_id", id).maybeSingle(),
+    supabase
+      .from("chat_messages")
+      .select("id, role, content")
+      .eq("contract_id", id)
+      .order("created_at", { ascending: true }),
+    supabase.from("folders").select("id, name").eq("user_id", user.id).order("name"),
+    supabase.from("profiles").select("plan").eq("id", user.id).single(),
+    supabase.from("shared_links").select("token").eq("contract_id", id).maybeSingle(),
+  ]);
 
   if (!analysis) {
     return (
@@ -107,6 +114,8 @@ export default async function ContractPage({
       initialChatMessages={chatMessages ?? []}
       folderId={contract.folder_id}
       folders={folders ?? []}
+      plan={profile?.plan ?? "free"}
+      shareToken={sharedLink?.token ?? null}
     />
   );
 }
