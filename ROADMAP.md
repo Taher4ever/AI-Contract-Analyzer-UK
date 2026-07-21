@@ -54,7 +54,7 @@ phase file, and push to origin main.
 | 11 | Dashboard organization (search, folders, favorites) | `phases/phase-11-dashboard-features.md` | [x] |
 | 12 | Export & shareable links | `phases/phase-12-export.md` | [x] |
 | 13 | Stripe billing & teams | `phases/phase-13-billing.md` | [x] |
-| 14 | Admin panel & blog CMS | `phases/phase-14-admin.md` | [ ] |
+| 14 | Admin panel & blog CMS | `phases/phase-14-admin.md` | [x] |
 | 15 | Public blog | `phases/phase-15-blog.md` | [ ] |
 | 16 | Performance, accessibility & polish | `phases/phase-16-polish.md` | [ ] |
 | 17 | Docker, docs & deployment | `phases/phase-17-deploy.md` | [ ] |

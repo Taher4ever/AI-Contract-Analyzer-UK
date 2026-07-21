@@ -6,12 +6,14 @@ export function StatCard({
   icon: Icon,
   label,
   value,
+  prefix,
   suffix,
   ring,
 }: {
   icon: LucideIcon;
   label: string;
   value: number | null;
+  prefix?: string;
   suffix?: string;
   ring?: { max: number };
 }) {
@@ -29,6 +31,7 @@ export function StatCard({
           <span className="text-muted-foreground text-xl">—</span>
         ) : (
           <>
+            {prefix}
             <AnimatedNumber value={value} />
             {suffix}
           </>

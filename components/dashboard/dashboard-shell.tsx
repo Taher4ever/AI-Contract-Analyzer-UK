@@ -11,7 +11,7 @@ import { Logo, LogoMark } from "@/components/shared/logo";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 import { SidebarFooter } from "@/components/dashboard/sidebar-footer";
 import { Topbar } from "@/components/dashboard/topbar";
-import type { Plan } from "@/types/database";
+import type { Plan, UserRole } from "@/types/database";
 import { cn } from "@/lib/utils";
 
 export function DashboardShell({
@@ -20,12 +20,14 @@ export function DashboardShell({
   fullName,
   avatarUrl,
   plan,
+  role,
 }: {
   children: React.ReactNode;
   email: string;
   fullName: string | null;
   avatarUrl: string | null;
   plan: Plan;
+  role?: UserRole;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -47,7 +49,7 @@ export function DashboardShell({
           {collapsed ? <LogoMark /> : <Logo />}
         </div>
         <div className="mt-8 flex-1 overflow-y-auto">
-          <SidebarNav scope="desktop" collapsed={collapsed} plan={plan} />
+          <SidebarNav scope="desktop" collapsed={collapsed} plan={plan} role={role} />
         </div>
         <SidebarFooter
           plan={plan}
@@ -64,7 +66,12 @@ export function DashboardShell({
             </SheetTitle>
           </SheetHeader>
           <div className="px-4">
-            <SidebarNav scope="mobile" onNavigate={() => setMobileOpen(false)} plan={plan} />
+            <SidebarNav
+              scope="mobile"
+              onNavigate={() => setMobileOpen(false)}
+              plan={plan}
+              role={role}
+            />
           </div>
         </SheetContent>
       </Sheet>

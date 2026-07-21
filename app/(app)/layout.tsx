@@ -16,7 +16,7 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url, plan")
+    .select("full_name, avatar_url, plan, role")
     .eq("id", user.id)
     .single();
 
@@ -26,6 +26,7 @@ export default async function AppLayout({
       fullName={profile?.full_name ?? null}
       avatarUrl={profile?.avatar_url ?? null}
       plan={profile?.plan ?? "free"}
+      role={profile?.role ?? "user"}
     >
       {children}
     </DashboardShell>

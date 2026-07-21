@@ -4,6 +4,7 @@ import {
   Folder,
   LayoutDashboard,
   Settings,
+  ShieldCheck,
   Star,
   Users,
   type LucideIcon,
@@ -14,6 +15,7 @@ export type NavItem = {
   label: string;
   icon: LucideIcon;
   requiresTeam?: boolean;
+  requiresAdmin?: boolean;
 };
 
 export const navItems: NavItem[] = [
@@ -24,4 +26,5 @@ export const navItems: NavItem[] = [
   { href: "/dashboard/team", label: "Team", icon: Users, requiresTeam: true },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/admin", label: "Admin", icon: ShieldCheck, requiresAdmin: true },
 ];
