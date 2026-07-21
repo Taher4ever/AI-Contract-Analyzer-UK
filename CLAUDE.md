@@ -12,7 +12,8 @@ Next.js 15 (App Router) · React 19 · TypeScript (strict) · Tailwind CSS · sh
 
 ```
 app/
-  (marketing)/          # public: home, pricing, blog — navbar+footer layout
+  (marketing)/          # public: home, pricing — navbar+footer layout
+  blog/                 # public blog — own layout (same navbar+footer), no group-level loading.tsx so notFound() 404s work
   (auth)/               # login, signup, auth callback
   (app)/dashboard/      # protected app — sidebar layout
   (admin)/admin/        # admin-only
