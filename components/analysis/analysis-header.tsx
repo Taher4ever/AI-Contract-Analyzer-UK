@@ -3,7 +3,16 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, Download, Loader2, Pencil, Star, Trash2, X } from "lucide-react";
+import {
+  Check,
+  Download,
+  Folder,
+  Loader2,
+  Pencil,
+  Star,
+  Trash2,
+  X,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,13 +26,20 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ReanalyzeButton } from "@/components/dashboard/reanalyze-button";
 import {
-  deleteContract,
+  moveToFolder,
+  renameContract,
   toggleFavorite,
-  updateContractTitle,
-} from "@/app/(app)/dashboard/contracts/[id]/actions";
+} from "@/app/(app)/dashboard/contracts/actions";
+import { deleteContract } from "@/app/(app)/dashboard/contracts/[id]/actions";
 import type { ContractType } from "@/lib/ai/schemas";
 
 const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
@@ -40,21 +56,28 @@ export function AnalysisHeader({
   createdAt,
   isFavorite,
   contractType,
+  folderId,
+  folders,
 }: {
   contractId: string;
   title: string;
   createdAt: string;
   isFavorite: boolean;
   contractType: ContractType;
+  folderId: string | null;
+  folders: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isFavPending, startFavTransition] = useTransition();
+  const [isMovePending, startMoveTransition] = useTransition();
   const [isDeletePending, startDeleteTransition] = useTransition();
 
   const [isEditing, setIsEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
   const [favorite, setFavorite] = useState(isFavorite);
+
+  const currentFolderName = folders.find((f) => f.id === folderId)?.name ?? null;
 
   const saveTitle = () => {
     const trimmed = draftTitle.trim();
@@ -64,7 +87,7 @@ export function AnalysisHeader({
       return;
     }
     startTransition(async () => {
-      const result = await updateContractTitle(contractId, trimmed);
+      const result = await renameContract(contractId, trimmed);
       if (result?.error) {
         toast.error(result.error);
         setDraftTitle(title);
@@ -83,6 +106,14 @@ export function AnalysisHeader({
         toast.error(result.error);
         setFavorite(!next);
       }
+    });
+  };
+
+  const onMove = (nextFolderId: string | null) => {
+    startMoveTransition(async () => {
+      const result = await moveToFolder(contractId, nextFolderId);
+      if (result?.error) toast.error(result.error);
+      else router.refresh();
     });
   };
 
@@ -155,6 +186,12 @@ export function AnalysisHeader({
         )}
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <Badge variant="secondary">{CONTRACT_TYPE_LABELS[contractType]}</Badge>
+          {currentFolderName && (
+            <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+              <Folder className="size-3" />
+              {currentFolderName}
+            </span>
+          )}
           <span className="text-muted-foreground text-xs">
             {new Date(createdAt).toLocaleDateString("en-GB", {
               day: "numeric",
@@ -166,6 +203,28 @@ export function AnalysisHeader({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="outline"
+                size="icon-sm"
+                aria-label="Move to folder"
+                disabled={isMovePending}
+              />
+            }
+          >
+            <Folder className="size-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onMove(null)}>No folder</DropdownMenuItem>
+            {folders.map((f) => (
+              <DropdownMenuItem key={f.id} onClick={() => onMove(f.id)}>
+                {f.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Tooltip>
           <TooltipTrigger
             render={

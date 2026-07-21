@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Menu, Search, Settings } from "lucide-react";
+import { LogOut, Menu, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { SearchCommand } from "@/components/dashboard/search-command";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,14 +47,7 @@ export function Topbar({
       <h1 className="text-lg font-semibold">{title}</h1>
 
       <div className="ml-auto flex items-center gap-2">
-        <div className="relative hidden sm:block">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-          <Input
-            disabled
-            placeholder="Search contracts…"
-            className="w-56 rounded-full pl-9"
-          />
-        </div>
+        <SearchCommand />
         <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger

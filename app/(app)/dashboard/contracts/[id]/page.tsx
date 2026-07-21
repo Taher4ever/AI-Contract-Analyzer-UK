@@ -27,24 +27,25 @@ export default async function ContractPage({
 
   const { data: contract } = await supabase
     .from("contracts")
-    .select("id, title, original_filename, status, is_favorite, paragraphs, created_at")
+    .select(
+      "id, title, original_filename, status, is_favorite, folder_id, paragraphs, created_at"
+    )
     .eq("id", id)
     .eq("user_id", user.id)
     .single();
 
   if (!contract) notFound();
 
-  const { data: analysis } = await supabase
-    .from("analyses")
-    .select("*")
-    .eq("contract_id", id)
-    .maybeSingle();
-
-  const { data: chatMessages } = await supabase
-    .from("chat_messages")
-    .select("id, role, content")
-    .eq("contract_id", id)
-    .order("created_at", { ascending: true });
+  const [{ data: analysis }, { data: chatMessages }, { data: folders }] =
+    await Promise.all([
+      supabase.from("analyses").select("*").eq("contract_id", id).maybeSingle(),
+      supabase
+        .from("chat_messages")
+        .select("id, role, content")
+        .eq("contract_id", id)
+        .order("created_at", { ascending: true }),
+      supabase.from("folders").select("id, name").eq("user_id", user.id).order("name"),
+    ]);
 
   if (!analysis) {
     return (
@@ -104,6 +105,8 @@ export default async function ContractPage({
       timeline={timelineResult.data}
       recommendedQuestions={questionsResult.data}
       initialChatMessages={chatMessages ?? []}
+      folderId={contract.folder_id}
+      folders={folders ?? []}
     />
   );
 }

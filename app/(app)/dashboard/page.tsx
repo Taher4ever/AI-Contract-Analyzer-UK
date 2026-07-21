@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FileText, Gauge, ShieldCheck, UploadCloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getContractsList } from "@/lib/contracts/list-data";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { ContractRow } from "@/components/dashboard/contract-row";
 import { EmptyState } from "@/components/shared/empty-state";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -42,8 +44,20 @@ export default async function DashboardPage() {
     .gte("created_at", startOfMonth.toISOString());
   const analysesQuery = supabase.from("analyses").select("risk_score");
 
-  const [{ count: analyzedCount }, { count: monthCount }, { data: analyses }] =
-    await Promise.all([analyzedCountQuery, monthCountQuery, analysesQuery]);
+  const [
+    { count: analyzedCount },
+    { count: monthCount },
+    { data: analyses },
+    recentContracts,
+    { data: folders },
+  ] = await Promise.all([
+    analyzedCountQuery,
+    monthCountQuery,
+    analysesQuery,
+    getContractsList(supabase, user!.id, { sort: "newest" }),
+    supabase.from("folders").select("id, name").eq("user_id", user!.id).order("name"),
+  ]);
+  const recent = recentContracts.slice(0, 5);
 
   const scores = (analyses ?? [])
     .map((a) => a.risk_score)
@@ -94,16 +108,31 @@ export default async function DashboardPage() {
       </Link>
 
       <div className="mt-10">
-        <h2 className="text-lg font-semibold">Recent contracts</h2>
-        <div className="glass shadow-soft mt-4 rounded-2xl">
-          <EmptyState
-            icon={ShieldCheck}
-            title="No contracts yet"
-            description="Upload your first contract to get a plain-English summary and risk score."
-            actionLabel="Upload contract"
-            actionHref="/dashboard/upload"
-          />
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Recent contracts</h2>
+          {recent.length > 0 && (
+            <Link href="/dashboard/contracts" className="text-primary text-sm hover:underline">
+              View all
+            </Link>
+          )}
         </div>
+        {recent.length === 0 ? (
+          <div className="glass shadow-soft mt-4 rounded-2xl">
+            <EmptyState
+              icon={ShieldCheck}
+              title="No contracts yet"
+              description="Upload your first contract to get a plain-English summary and risk score."
+              actionLabel="Upload contract"
+              actionHref="/dashboard/upload"
+            />
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {recent.map((contract) => (
+              <ContractRow key={contract.id} contract={contract} folders={folders ?? []} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

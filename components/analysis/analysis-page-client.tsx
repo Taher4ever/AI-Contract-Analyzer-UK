@@ -29,6 +29,8 @@ interface AnalysisPageClientProps {
   timeline: TimelineEntry[];
   recommendedQuestions: string[];
   initialChatMessages: ChatMessageData[];
+  folderId: string | null;
+  folders: { id: string; name: string }[];
 }
 
 function useIsDesktop(): boolean | null {
@@ -65,6 +67,8 @@ function AnalysisPageContent({
   timeline,
   recommendedQuestions,
   initialChatMessages,
+  folderId,
+  folders,
 }: AnalysisPageClientProps) {
   const { activeTab, setActiveTab } = useHighlight();
   const isDesktop = useIsDesktop();
@@ -130,6 +134,8 @@ function AnalysisPageContent({
         createdAt={createdAt}
         isFavorite={isFavorite}
         contractType={sections.contractType as ContractType}
+        folderId={folderId}
+        folders={folders}
       />
 
       <div className="mt-6 hidden gap-6 lg:grid lg:grid-cols-[55%_45%]">
