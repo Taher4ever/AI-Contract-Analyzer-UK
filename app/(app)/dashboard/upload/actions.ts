@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { extractDocx, extractPdf, splitIntoParagraphs } from "@/lib/extraction/extract";
+import { canUploadContract } from "@/lib/billing/limits";
 import type { ContractFileType } from "@/types/database";
 
 export type UploadResult =
@@ -27,29 +28,13 @@ export async function uploadContract(formData: FormData): Promise<UploadResult> 
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Not signed in." };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("plan")
-    .eq("id", user.id)
-    .single();
-  const plan = profile?.plan ?? "free";
-
-  if (plan === "free") {
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-    const { count } = await supabase
-      .from("contracts")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("created_at", startOfMonth.toISOString());
-    if ((count ?? 0) >= 3) {
-      return {
-        success: false,
-        error: "You've reached your free plan limit of 3 documents this month.",
-        code: "limit_reached",
-      };
-    }
+  const limitStatus = await canUploadContract(user.id);
+  if (!limitStatus.allowed) {
+    return {
+      success: false,
+      error: `You've reached your free plan limit of ${limitStatus.limit} documents this month.`,
+      code: "limit_reached",
+    };
   }
 
   const file = formData.get("file");

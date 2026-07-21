@@ -47,7 +47,7 @@ export function DashboardShell({
           {collapsed ? <LogoMark /> : <Logo />}
         </div>
         <div className="mt-8 flex-1 overflow-y-auto">
-          <SidebarNav scope="desktop" collapsed={collapsed} />
+          <SidebarNav scope="desktop" collapsed={collapsed} plan={plan} />
         </div>
         <SidebarFooter
           plan={plan}
@@ -64,7 +64,7 @@ export function DashboardShell({
             </SheetTitle>
           </SheetHeader>
           <div className="px-4">
-            <SidebarNav scope="mobile" onNavigate={() => setMobileOpen(false)} />
+            <SidebarNav scope="mobile" onNavigate={() => setMobileOpen(false)} plan={plan} />
           </div>
         </SheetContent>
       </Sheet>

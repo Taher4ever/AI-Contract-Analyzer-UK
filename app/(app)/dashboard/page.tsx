@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FileText, Gauge, ShieldCheck, UploadCloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getContractsList } from "@/lib/contracts/list-data";
+import { FREE_MONTHLY_LIMIT } from "@/lib/billing/limits";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ContractRow } from "@/components/dashboard/contract-row";
+import { TeamInviteBanner } from "@/components/dashboard/team-invite-banner";
 import { EmptyState } from "@/components/shared/empty-state";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -24,9 +27,23 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, plan")
+    .select("full_name, plan, email")
     .eq("id", user!.id)
     .single();
+
+  const { data: pendingInvite } = await supabase
+    .from("team_members")
+    .select("id, team_id")
+    .eq("invited_email", profile?.email ?? user!.email ?? "")
+    .eq("status", "pending")
+    .maybeSingle();
+  const { data: pendingInviteTeam } = pendingInvite
+    ? await createAdminClient()
+        .from("teams")
+        .select("name")
+        .eq("id", pendingInvite.team_id)
+        .single()
+    : { data: null };
 
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
@@ -79,14 +96,20 @@ export default async function DashboardPage() {
         Here&apos;s what&apos;s happening with your contracts.
       </p>
 
+      {pendingInvite && pendingInviteTeam && (
+        <div className="mt-6">
+          <TeamInviteBanner memberId={pendingInvite.id} teamName={pendingInviteTeam.name} />
+        </div>
+      )}
+
       <div className="mt-8 grid gap-6 sm:grid-cols-3">
         <StatCard icon={FileText} label="Contracts analyzed" value={analyzedCount ?? 0} />
         <StatCard
           icon={UploadCloud}
           label="This month"
           value={monthCount ?? 0}
-          suffix={plan === "free" ? " / 3" : undefined}
-          ring={plan === "free" ? { max: 3 } : undefined}
+          suffix={plan === "free" ? ` / ${FREE_MONTHLY_LIMIT}` : undefined}
+          ring={plan === "free" ? { max: FREE_MONTHLY_LIMIT } : undefined}
         />
         <StatCard icon={Gauge} label="Average risk score" value={avgRisk} />
       </div>

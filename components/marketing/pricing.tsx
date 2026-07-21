@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/shared/container";
 import { FadeIn, FadeInStagger } from "@/components/shared/motion";
+import { CheckoutButton } from "@/components/dashboard/checkout-button";
+import { PortalButton } from "@/components/dashboard/portal-button";
 import { cn } from "@/lib/utils";
-import { tiers } from "@/components/marketing/data";
+import { PLANS, yearlyPrice, type BillingPeriod, type PlanId } from "@/lib/stripe/plans";
 
-type Billing = "monthly" | "yearly";
-
-function price(monthly: number, billing: Billing) {
-  return billing === "yearly" ? Math.round(monthly * 0.8) : monthly;
+function price(monthly: number, billing: BillingPeriod) {
+  return billing === "yearly" ? yearlyPrice(monthly) : monthly;
 }
 
 function AnimatedPrice({ value }: { value: number }) {
@@ -37,8 +37,8 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-export function Pricing() {
-  const [billing, setBilling] = useState<Billing>("monthly");
+export function Pricing({ currentPlan }: { currentPlan: PlanId | null }) {
+  const [billing, setBilling] = useState<BillingPeriod>("monthly");
 
   return (
     <section id="pricing" className="scroll-mt-24 py-20 lg:py-28">
@@ -100,54 +100,84 @@ export function Pricing() {
         </FadeIn>
 
         <FadeInStagger className="mt-14 grid items-stretch gap-6 lg:grid-cols-3">
-          {tiers.map((tier) => (
-            <FadeIn key={tier.name} className="h-full">
-              <div
-                className={cn(
-                  "glass shadow-soft relative flex h-full flex-col rounded-2xl p-7",
-                  tier.highlighted &&
-                    "glass-strong shadow-soft-lg ring-primary ring-2"
-                )}
-              >
-                {tier.highlighted && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3">
-                    Most popular
-                  </Badge>
-                )}
-                <h3 className="text-lg font-semibold">{tier.name}</h3>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {tier.description}
-                </p>
-                <div className="mt-5 flex items-baseline gap-1.5">
-                  <AnimatedPrice value={price(tier.monthly, billing)} />
-                  <span className="text-muted-foreground text-sm">/month</span>
-                </div>
-                <p className="text-muted-foreground mt-1 h-4 text-xs">
-                  {billing === "yearly" && tier.monthly > 0
-                    ? "Billed yearly — save 20%"
-                    : " "}
-                </p>
-                <ul className="mt-6 space-y-2.5">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
-                      <Check className="text-primary mt-0.5 size-4 shrink-0" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-8 flex-1" />
-                <Button
-                  size="lg"
-                  variant={tier.highlighted ? "default" : "outline"}
-                  className="w-full rounded-full"
-                  nativeButton={false}
-                  render={<Link href="/signup" />}
+          {PLANS.map((tier) => {
+            const isCurrent = currentPlan === tier.id;
+
+            return (
+              <FadeIn key={tier.name} className="h-full">
+                <div
+                  className={cn(
+                    "glass shadow-soft relative flex h-full flex-col rounded-2xl p-7",
+                    tier.highlighted &&
+                      "glass-strong shadow-soft-lg ring-primary ring-2"
+                  )}
                 >
-                  {tier.cta}
-                </Button>
-              </div>
-            </FadeIn>
-          ))}
+                  {tier.highlighted && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3">
+                      Most popular
+                    </Badge>
+                  )}
+                  <h3 className="text-lg font-semibold">{tier.name}</h3>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {tier.description}
+                  </p>
+                  <div className="mt-5 flex items-baseline gap-1.5">
+                    <AnimatedPrice value={price(tier.monthlyPrice, billing)} />
+                    <span className="text-muted-foreground text-sm">/month</span>
+                  </div>
+                  <p className="text-muted-foreground mt-1 h-4 text-xs">
+                    {billing === "yearly" && tier.monthlyPrice > 0
+                      ? "Billed yearly — save 20%"
+                      : " "}
+                  </p>
+                  <ul className="mt-6 space-y-2.5">
+                    {tier.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5">
+                        <Check className="text-primary mt-0.5 size-4 shrink-0" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-8 flex-1" />
+
+                  {currentPlan === null ? (
+                    <Button
+                      size="lg"
+                      variant={tier.highlighted ? "default" : "outline"}
+                      className="w-full rounded-full"
+                      nativeButton={false}
+                      render={<Link href="/signup" />}
+                    >
+                      {tier.cta}
+                    </Button>
+                  ) : isCurrent ? (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      disabled
+                      className="w-full rounded-full"
+                    >
+                      Current plan
+                    </Button>
+                  ) : tier.id === "free" ? (
+                    <PortalButton size="lg" variant="outline" className="w-full rounded-full">
+                      Downgrade
+                    </PortalButton>
+                  ) : (
+                    <CheckoutButton
+                      plan={tier.id}
+                      billing={billing}
+                      size="lg"
+                      variant={tier.highlighted ? "default" : "outline"}
+                      className="w-full rounded-full"
+                    >
+                      {tier.cta}
+                    </CheckoutButton>
+                  )}
+                </div>
+              </FadeIn>
+            );
+          })}
         </FadeInStagger>
 
         <p className="text-muted-foreground mt-8 text-center text-xs">

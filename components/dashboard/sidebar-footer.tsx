@@ -38,7 +38,7 @@ export function SidebarFooter({
             </Badge>
             {plan !== "team" && (
               <Link
-                href="/pricing"
+                href="/dashboard/billing"
                 className="text-primary text-xs font-semibold hover:underline"
               >
                 Upgrade

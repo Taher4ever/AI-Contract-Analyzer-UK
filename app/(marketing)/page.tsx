@@ -5,8 +5,10 @@ import { Features } from "@/components/marketing/features";
 import { Pricing } from "@/components/marketing/pricing";
 import { Faq } from "@/components/marketing/faq";
 import { Cta } from "@/components/marketing/cta";
-import { tiers, faqs } from "@/components/marketing/data";
+import { faqs } from "@/components/marketing/data";
 import { JsonLd } from "@/components/shared/json-ld";
+import { createClient } from "@/lib/supabase/server";
+import { PLANS } from "@/lib/stripe/plans";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -19,10 +21,10 @@ const softwareApplicationJsonLd = {
   url: appUrl,
   description:
     "AI-powered analysis of UK contracts: risk scores, plain-English summaries and clause-by-clause breakdowns.",
-  offers: tiers.map((tier) => ({
+  offers: PLANS.map((tier) => ({
     "@type": "Offer",
     name: tier.name,
-    price: tier.monthly.toString(),
+    price: tier.monthlyPrice.toString(),
     priceCurrency: "GBP",
     description: tier.description,
   })),
@@ -41,7 +43,22 @@ const faqJsonLd = {
   })),
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let currentPlan = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .single();
+    currentPlan = profile?.plan ?? "free";
+  }
+
   return (
     <>
       <JsonLd data={softwareApplicationJsonLd} />
@@ -50,7 +67,7 @@ export default function HomePage() {
       <SocialProof />
       <HowItWorks />
       <Features />
-      <Pricing />
+      <Pricing currentPlan={currentPlan} />
       <Faq />
       <Cta />
     </>

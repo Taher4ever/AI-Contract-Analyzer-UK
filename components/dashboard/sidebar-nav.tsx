@@ -5,21 +5,25 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { navItems } from "@/components/dashboard/nav-items";
 import { cn } from "@/lib/utils";
+import type { Plan } from "@/types/database";
 
 export function SidebarNav({
   scope,
   collapsed = false,
   onNavigate,
+  plan = "free",
 }: {
   scope: "desktop" | "mobile";
   collapsed?: boolean;
   onNavigate?: () => void;
+  plan?: Plan;
 }) {
   const pathname = usePathname();
+  const visibleItems = navItems.filter((item) => !item.requiresTeam || plan === "team");
 
   return (
     <nav className="flex flex-col gap-1">
-      {navItems.map((item) => {
+      {visibleItems.map((item) => {
         const active = pathname === item.href;
         return (
           <Link

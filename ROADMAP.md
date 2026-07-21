@@ -53,7 +53,7 @@ phase file, and push to origin main.
 | 10 | AI chat | `phases/phase-10-ai-chat.md` | [x] |
 | 11 | Dashboard organization (search, folders, favorites) | `phases/phase-11-dashboard-features.md` | [x] |
 | 12 | Export & shareable links | `phases/phase-12-export.md` | [x] |
-| 13 | Stripe billing & teams | `phases/phase-13-billing.md` | [ ] |
+| 13 | Stripe billing & teams | `phases/phase-13-billing.md` | [x] |
 | 14 | Admin panel & blog CMS | `phases/phase-14-admin.md` | [ ] |
 | 15 | Public blog | `phases/phase-15-blog.md` | [ ] |
 | 16 | Performance, accessibility & polish | `phases/phase-16-polish.md` | [ ] |

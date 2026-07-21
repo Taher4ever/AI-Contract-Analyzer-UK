@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { deleteContractRecord } from "@/lib/contracts/delete";
+import { isPaidPlan } from "@/lib/stripe/plans";
 
 export type ActionResult = { error?: string };
 export type ShareLinkResult =
@@ -62,7 +63,7 @@ export async function createShareLink(contractId: string): Promise<ShareLinkResu
     .select("plan")
     .eq("id", user.id)
     .single();
-  if ((profile?.plan ?? "free") === "free") {
+  if (!isPaidPlan(profile?.plan ?? "free")) {
     return {
       success: false,
       error: "Share links are a Pro feature.",
