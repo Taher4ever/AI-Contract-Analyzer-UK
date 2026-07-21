@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { GeistMono } from "geist/font/mono";
+import { MotionConfig } from "framer-motion";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -84,8 +85,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster position="top-center" />
+          <MotionConfig reducedMotion="user">
+            {children}
+            <Toaster position="top-center" />
+          </MotionConfig>
         </ThemeProvider>
       </body>
     </html>

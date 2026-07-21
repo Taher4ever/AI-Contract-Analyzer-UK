@@ -56,7 +56,7 @@ phase file, and push to origin main.
 | 13 | Stripe billing & teams | `phases/phase-13-billing.md` | [x] |
 | 14 | Admin panel & blog CMS | `phases/phase-14-admin.md` | [x] |
 | 15 | Public blog | `phases/phase-15-blog.md` | [x] |
-| 16 | Performance, accessibility & polish | `phases/phase-16-polish.md` | [ ] |
+| 16 | Performance, accessibility & polish | `phases/phase-16-polish.md` | [x] |
 | 17 | Docker, docs & deployment | `phases/phase-17-deploy.md` | [ ] |
 
 ## Milestones

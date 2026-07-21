@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileText, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   searchContracts,
   type SearchResult,
@@ -95,6 +95,7 @@ export function SearchCommand() {
           showCloseButton={false}
           className="top-[18%] max-w-lg translate-y-0 gap-0 overflow-hidden p-0"
         >
+          <DialogTitle className="sr-only">Search contracts</DialogTitle>
           <div className="flex items-center gap-2 border-b px-3">
             <Search className="text-muted-foreground size-4 shrink-0" />
             <input
@@ -103,6 +104,7 @@ export function SearchCommand() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={onInputKeyDown}
               placeholder="Search by title or contract type…"
+              aria-label="Search contracts"
               className="placeholder:text-muted-foreground h-11 flex-1 bg-transparent text-sm outline-none"
             />
           </div>

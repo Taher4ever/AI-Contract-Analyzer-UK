@@ -94,6 +94,10 @@ export function UploadDropzone() {
   return (
     <>
       <div
+        role="button"
+        tabIndex={status === "idle" ? 0 : -1}
+        aria-label="Upload a contract. Drag and drop a PDF or DOCX file here, or press Enter to browse."
+        aria-disabled={status !== "idle"}
         onDragEnter={(event) => {
           event.preventDefault();
           dragCounter.current += 1;
@@ -107,8 +111,15 @@ export function UploadDropzone() {
         }}
         onDrop={onDrop}
         onClick={() => status === "idle" && inputRef.current?.click()}
+        onKeyDown={(event) => {
+          if (status !== "idle") return;
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
         className={cn(
-          "glass shadow-soft flex min-h-72 flex-col items-center justify-center rounded-3xl border-2 border-dashed p-10 text-center transition-all",
+          "glass shadow-soft focus-visible:ring-ring/50 flex min-h-72 flex-col items-center justify-center rounded-3xl border-2 border-dashed p-10 text-center transition-all outline-none focus-visible:ring-3",
           status === "idle" ? "cursor-pointer" : "cursor-default",
           isDragging ? "border-primary shadow-soft-lg scale-[1.01]" : "border-border",
           shake && "animate-shake motion-reduce:animate-none"
@@ -119,6 +130,8 @@ export function UploadDropzone() {
           type="file"
           accept=".pdf,.docx"
           className="hidden"
+          tabIndex={-1}
+          aria-hidden="true"
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) handleFile(file);
@@ -126,34 +139,36 @@ export function UploadDropzone() {
           }}
         />
 
-        {status === "idle" && (
-          <>
-            <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-2xl">
-              <UploadCloud className="size-7" />
-            </div>
-            <p className="mt-5 font-semibold">Drag & drop your contract here</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              or click to browse — PDF or DOCX, up to 10MB
-            </p>
-          </>
-        )}
+        <div aria-live="polite" className="contents">
+          {status === "idle" && (
+            <>
+              <div className="bg-primary/10 text-primary flex size-16 items-center justify-center rounded-2xl">
+                <UploadCloud className="size-7" />
+              </div>
+              <p className="mt-5 font-semibold">Drag & drop your contract here</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                or click to browse — PDF or DOCX, up to 10MB
+              </p>
+            </>
+          )}
 
-        {status === "uploading" && (
-          <>
-            <Loader2 className="text-primary size-10 animate-spin" />
-            <p className="mt-5 font-semibold">{PROCESSING_STEPS[stepIndex]}</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              This usually takes a few seconds.
-            </p>
-          </>
-        )}
+          {status === "uploading" && (
+            <>
+              <Loader2 className="text-primary size-10 animate-spin" aria-hidden="true" />
+              <p className="mt-5 font-semibold">{PROCESSING_STEPS[stepIndex]}</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                This usually takes a few seconds.
+              </p>
+            </>
+          )}
 
-        {status === "done" && (
-          <>
-            <CheckCircle2 className="text-primary size-10" />
-            <p className="mt-5 font-semibold">Done! Taking you to your contract…</p>
-          </>
-        )}
+          {status === "done" && (
+            <>
+              <CheckCircle2 className="text-primary size-10" aria-hidden="true" />
+              <p className="mt-5 font-semibold">Done! Taking you to your contract…</p>
+            </>
+          )}
+        </div>
       </div>
 
       <UpgradeDialog

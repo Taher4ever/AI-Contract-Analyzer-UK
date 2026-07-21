@@ -70,7 +70,7 @@ export function AnalysisRunner({ contractId }: { contractId: string }) {
 
   if (error) {
     return (
-      <div className="glass shadow-soft rounded-2xl p-8 text-center">
+      <div role="alert" className="glass shadow-soft rounded-2xl p-8 text-center">
         <p className="font-semibold">Analysis failed</p>
         <p className="text-muted-foreground mt-2 text-sm">{error}</p>
         <div className="mt-5 flex justify-center">
@@ -81,19 +81,27 @@ export function AnalysisRunner({ contractId }: { contractId: string }) {
   }
 
   return (
-    <div className="glass shadow-soft rounded-2xl p-8">
+    <div
+      role="status"
+      aria-live="polite"
+      className="glass shadow-soft rounded-2xl p-8"
+    >
       <ul className="space-y-3">
         {STEPS.map((step) => {
           const done = seenKeys.has(step.key);
           return (
             <li key={step.key} className="flex items-center gap-3">
               {done ? (
-                <CheckCircle2 className="text-primary size-5 shrink-0" />
+                <CheckCircle2 className="text-primary size-5 shrink-0" aria-hidden="true" />
               ) : (
-                <Loader2 className="text-muted-foreground size-5 shrink-0 animate-spin" />
+                <Loader2
+                  className="text-muted-foreground size-5 shrink-0 animate-spin"
+                  aria-hidden="true"
+                />
               )}
               <span className={cn(!done && "text-muted-foreground")}>
                 {step.label}
+                {done && <span className="sr-only"> — done</span>}
               </span>
             </li>
           );

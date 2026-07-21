@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { HighlightProvider, useHighlight } from "./highlight-context";
 import { AnalysisHeader } from "./analysis-header";
 import { RiskScore } from "./risk-score";
@@ -13,9 +14,19 @@ import { ContractViewer } from "./contract-viewer";
 import { FadeIn, FadeInStagger } from "@/components/shared/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChatPanel, type ChatMessageData } from "@/components/chat/chat-panel";
+import type { ChatMessageData } from "@/components/chat/chat-panel";
 import type { Paragraph, Plan } from "@/types/database";
 import type { ContractType, StoredSections, TimelineEntry } from "@/lib/ai/schemas";
+
+// Only ever rendered client-side once the Chat tab is opened — dynamic-import
+// so react-markdown and the chat UI aren't in the initial analysis page bundle.
+const ChatPanel = dynamic(
+  () => import("@/components/chat/chat-panel").then((m) => m.ChatPanel),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[calc(100vh-16rem)] rounded-2xl lg:h-full" />,
+  }
+);
 
 interface AnalysisPageClientProps {
   contractId: string;

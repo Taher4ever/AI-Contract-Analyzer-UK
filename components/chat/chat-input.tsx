@@ -41,6 +41,7 @@ export function ChatInput({
         disabled={disabled}
         rows={1}
         placeholder="Ask about this contract…"
+        aria-label="Ask about this contract. Press Enter to send, Shift+Enter for a new line."
         className="text-foreground placeholder:text-muted-foreground max-h-40 flex-1 resize-none bg-transparent text-sm outline-none disabled:opacity-60"
       />
       {isStreaming ? (

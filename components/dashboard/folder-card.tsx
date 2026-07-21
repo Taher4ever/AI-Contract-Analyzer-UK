@@ -109,6 +109,7 @@ export function FolderCard({
               }
             }}
             disabled={isRenamePending}
+            aria-label="Folder name"
             className="h-8 text-sm font-medium"
           />
           <Button

@@ -7,7 +7,6 @@ import { Faq } from "@/components/marketing/faq";
 import { Cta } from "@/components/marketing/cta";
 import { faqs } from "@/components/marketing/data";
 import { JsonLd } from "@/components/shared/json-ld";
-import { createClient } from "@/lib/supabase/server";
 import { PLANS } from "@/lib/stripe/plans";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -43,22 +42,7 @@ const faqJsonLd = {
   })),
 };
 
-export default async function HomePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let currentPlan = null;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("plan")
-      .eq("id", user.id)
-      .single();
-    currentPlan = profile?.plan ?? "free";
-  }
-
+export default function HomePage() {
   return (
     <>
       <JsonLd data={softwareApplicationJsonLd} />
@@ -67,7 +51,7 @@ export default async function HomePage() {
       <SocialProof />
       <HowItWorks />
       <Features />
-      <Pricing currentPlan={currentPlan} />
+      <Pricing />
       <Faq />
       <Cta />
     </>

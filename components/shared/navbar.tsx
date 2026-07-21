@@ -17,6 +17,7 @@ import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { UserMenu } from "@/components/shared/user-menu";
 import { SignOutButton } from "@/components/shared/sign-out-button";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const links = [
@@ -28,7 +29,36 @@ const links = [
 
 export type NavbarUser = { email: string; avatarUrl?: string | null } | null;
 
-export function Navbar({ user = null }: { user?: NavbarUser }) {
+// Fetched client-side (not passed down from a server layout) so marketing
+// pages carry no cookies()/dynamic-API dependency and can be statically
+// generated — the tradeoff is a brief "logged out" flash on first paint for
+// already-signed-in visitors, which is standard for static marketing shells.
+function useAuthUser(): NavbarUser {
+  const [user, setUser] = useState<NavbarUser>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data }) => {
+      const u = data.user;
+      setUser(u ? { email: u.email ?? "", avatarUrl: u.user_metadata?.avatar_url } : null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user;
+      setUser(u ? { email: u.email ?? "", avatarUrl: u.user_metadata?.avatar_url } : null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return user;
+}
+
+export function Navbar() {
+  const user = useAuthUser();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 

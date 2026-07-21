@@ -180,7 +180,12 @@ export function ChatPanel({
         )}
       </div>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3">
+      <div
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions text"
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3"
+      >
         {messages.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-4 px-4 text-center">
             <div className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-2xl">
@@ -203,7 +208,10 @@ export function ChatPanel({
               />
             ))}
             {error && (
-              <div className="flex items-start gap-2 rounded-xl bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-400">
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-xl bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-400"
+              >
                 <AlertCircle className="mt-0.5 size-3.5 shrink-0" />
                 <div className="flex-1">
                   <p>{error}</p>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
@@ -10,8 +10,44 @@ import { Container } from "@/components/shared/container";
 import { FadeIn, FadeInStagger } from "@/components/shared/motion";
 import { CheckoutButton } from "@/components/dashboard/checkout-button";
 import { PortalButton } from "@/components/dashboard/portal-button";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { PLANS, yearlyPrice, type BillingPeriod, type PlanId } from "@/lib/stripe/plans";
+
+// Fetched client-side so this section carries no cookies()/dynamic-API
+// dependency, letting the marketing pages that render it stay static.
+function useCurrentPlan(): PlanId | null {
+  const [currentPlan, setCurrentPlan] = useState<PlanId | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function load() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setCurrentPlan(null);
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan")
+        .eq("id", user.id)
+        .single();
+      setCurrentPlan(profile?.plan ?? "free");
+    }
+    load();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => load());
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return currentPlan;
+}
 
 function price(monthly: number, billing: BillingPeriod) {
   return billing === "yearly" ? yearlyPrice(monthly) : monthly;
@@ -37,7 +73,8 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-export function Pricing({ currentPlan }: { currentPlan: PlanId | null }) {
+export function Pricing() {
+  const currentPlan = useCurrentPlan();
   const [billing, setBilling] = useState<BillingPeriod>("monthly");
 
   return (

@@ -124,6 +124,7 @@ export function TeamMembersCard({
               }}
               disabled={isInviting}
               placeholder="colleague@company.com"
+              aria-label="Invite by email"
               className="pl-9"
             />
           </div>

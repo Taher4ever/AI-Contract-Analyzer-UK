@@ -1,3 +1,4 @@
+import "server-only";
 import { extractTextItems } from "unpdf";
 import mammoth from "mammoth";
 import type { Paragraph } from "@/types/database";

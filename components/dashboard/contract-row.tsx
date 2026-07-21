@@ -157,6 +157,7 @@ export function ContractRow({
                 }
               }}
               disabled={isRenamePending}
+              aria-label="Contract title"
               className="h-7 max-w-xs text-sm font-medium"
             />
             <Button

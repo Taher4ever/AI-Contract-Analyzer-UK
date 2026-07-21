@@ -41,6 +41,7 @@ export function AdminSearchInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
+        aria-label={placeholder}
         className="pl-9"
       />
     </div>

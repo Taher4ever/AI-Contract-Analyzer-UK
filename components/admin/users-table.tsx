@@ -63,7 +63,7 @@ function UserRoleSelect({ user }: { user: AdminUserRow }) {
         onValueChange={(v) => setPendingRole(v as UserRole)}
         disabled={isPending}
       >
-        <SelectTrigger size="sm" className="w-24">
+        <SelectTrigger size="sm" className="w-24" aria-label={`Change role for ${user.email}`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -110,7 +110,7 @@ function UserPlanSelect({ user }: { user: AdminUserRow }) {
 
   return (
     <Select value={user.plan} onValueChange={onChange} disabled={isPending}>
-      <SelectTrigger size="sm" className="w-24">
+      <SelectTrigger size="sm" className="w-24" aria-label={`Change plan for ${user.email}`}>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

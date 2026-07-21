@@ -71,6 +71,7 @@ export function ShareLinkDialog({
           <Input
             readOnly
             value={url}
+            aria-label="Shareable link"
             className="flex-1"
             onFocus={(e) => e.target.select()}
           />
