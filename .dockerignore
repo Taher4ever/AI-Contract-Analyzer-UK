@@ -1,0 +1,21 @@
+node_modules
+.next
+.git
+.gitignore
+
+# secrets — never send these to the build context
+.env
+.env.local
+.env*.local
+
+# editor / OS
+.vscode
+.DS_Store
+Thumbs.db
+
+# docs & misc (not needed at build or runtime)
+*.md
+!README.md
+phases
+
+npm-debug.log*
